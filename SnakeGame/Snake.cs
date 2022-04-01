@@ -10,6 +10,7 @@ class Snake: Object
 {
     public Direction direction = Direction.Right;
 
+    public Snake? lastTail = null;
     public Snake(char symbol, int x, int y) : base (symbol, x, y)
     {
         this.position.VectorChangeEvent += Object.delete;
@@ -31,5 +32,7 @@ class Snake: Object
                 this.position.Y += 1;
                 break;
         }
+        lastTail?.step();
+        if (lastTail != null) lastTail.direction = this.direction;
     }
 }

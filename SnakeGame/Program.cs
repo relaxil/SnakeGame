@@ -42,6 +42,41 @@ void checkFoodTicket(ref Food food)
     }
 }
 
+void spawnSnakeTail(ref List<Snake> list)
+{
+    int lastList = list.Count - 1;
+    Snake? newSnake = null;
+
+    switch (list[lastList].direction)
+    {
+        case Direction.Left:
+            newSnake = new Snake('@', list[lastList].position.X + 1, list[lastList].position.Y);
+            list[lastList].lastTail = newSnake;
+            list.Add(newSnake);
+            break;
+        case Direction.Right:
+            newSnake = new Snake('@', list[lastList].position.X - 1, list[lastList].position.Y);
+            list[lastList].lastTail = newSnake;
+            list.Add(newSnake);
+            break;
+        case Direction.Up:
+            newSnake = new Snake('@', list[lastList].position.X, list[lastList].position.Y - 1);
+            list[lastList].lastTail = newSnake;
+            list.Add(newSnake);
+            break;
+        case Direction.Down:
+            newSnake = new Snake('@', list[lastList].position.X, list[lastList].position.Y + 1);
+            list[lastList].lastTail = newSnake;
+            list.Add(newSnake);
+            break;
+    }
+    if(newSnake != null) newSnake.direction = list[lastList].direction;
+
+    /*Snake newSnake = new Snake('@', list[lastList].position.X - 1, list[lastList].position.Y);
+    list[lastList].lastTail = newSnake;
+    list.Add(newSnake);*/
+}
+
 void render()
 {
     Game.fillField();
@@ -50,23 +85,34 @@ void render()
 
     ConsoleKey key = default;
 
+    List<Snake> list = new List<Snake>();
+    list.Add(snake);
+
     while (true)
     {
         Thread.Sleep(700);
 
+        if (Object.detectCollision(snake, food))
+        {
+            food.Ticks = 0;
+            food.isExists = false;
+
+            spawnSnakeTail(ref list);
+        }
+
         if (Console.KeyAvailable)
             key = Console.ReadKey(true).Key;
-
         checkKey(key, ref snake);
+
+        snake.step();
 
         food.Ticks++;
         checkFoodTicket(ref food);
 
-        if(Object.detectCollision(snake, food))
-            food.isExists = false;
-
-        snake.step();
-        snake.spawn();
+        foreach (Snake item in list)
+        {
+            item.spawn();
+        }
 
         Console.Clear();
         renderPlayingField();

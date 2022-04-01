@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 static class Game {
-    public static char[,] playingField = new char[20, 60];
+    public static char[,] playingField = new char[20, 40];
 
     public static void fillField()
     {
